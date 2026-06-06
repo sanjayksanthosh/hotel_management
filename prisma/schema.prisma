@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  @@map("admins")
+}
+
+model Room {
+  id          String      @id @default(cuid())
+  name        String
+  type        String
+  description String
+  price       Float
+  capacity    Int         @map("capacity")
+  status      String      @default("Available")
+  images      RoomImage[]
+  bookings    Booking[]
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  @@map("rooms")
+}
+
+model RoomImage {
+  id       String @id @default(cuid())
+  roomId   String @map("room_id")
+  imageUrl String @map("image_url")
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  @@map("room_images")
+}
+
+model Booking {
+  id               String    @id @default(cuid())
+  bookingReference String    @unique @map("booking_reference")
+  guestName        String    @map("guest_name")
+  guestEmail       String    @map("guest_email")
+  guestPhone       String    @map("guest_phone")
+  roomId           String    @map("room_id")
+  checkIn          DateTime  @map("check_in")
+  checkOut         DateTime  @map("check_out")
+  guests           Int
+  totalAmount      Float     @map("total_amount")
+  bookingStatus    String    @default("Pending") @map("booking_status")
+  paymentStatus    String    @default("Unpaid") @map("payment_status")
+  paymentMethod    String    @map("payment_method")
+  specialRequests  String?   @map("special_requests")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  room             Room      @relation(fields: [roomId], references: [id])
+  payments         Payment[]
+  @@map("bookings")
+}
+
+model Payment {
+  id                  String    @id @default(cuid())
+  bookingId           String    @map("booking_id")
+  amount              Float
+  gateway             String
+  transactionReference String?  @map("transaction_reference")
+  status              String    @default("Unpaid")
+  paidAt              DateTime? @map("paid_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  booking             Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  @@map("payments")
+}
