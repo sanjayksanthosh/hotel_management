@@ -17,7 +17,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    // Verify payment with Paystack
+    if (booking.paymentStatus === "Paid") {
+      return NextResponse.json({ error: "Booking already paid" }, { status: 400 });
+    }
+
     const verifyResponse = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -32,6 +35,21 @@ export async function POST(request: NextRequest) {
     if (!verifyData.status || verifyData.data.status !== "success") {
       return NextResponse.json(
         { error: "Payment verification failed" },
+        { status: 400 }
+      );
+    }
+
+    const paidAmount = verifyData.data.amount / 100;
+    if (Math.abs(paidAmount - booking.totalAmount) > 0.01) {
+      return NextResponse.json(
+        { error: "Payment amount mismatch" },
+        { status: 400 }
+      );
+    }
+
+    if (verifyData.data.metadata?.booking_id !== bookingId) {
+      return NextResponse.json(
+        { error: "Booking ID mismatch" },
         { status: 400 }
       );
     }
@@ -78,8 +96,8 @@ export async function POST(request: NextRequest) {
         paymentMethod: "Pay Online",
         reference: booking.bookingReference,
       });
-    } catch {
-      // Email failure should not block payment
+    } catch (error) {
+      console.error("Failed to send payment notification emails:", error);
     }
 
     return NextResponse.json(updated);

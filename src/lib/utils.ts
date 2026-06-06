@@ -1,8 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 
+export function escapeHtml(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 export function generateReference(): string {
   const prefix = "HTL";
-  const suffix = uuidv4().replace(/-/g, "").substring(0, 8).toUpperCase();
+  const suffix = uuidv4().replace(/-/g, "").substring(0, 12).toUpperCase();
   return `${prefix}-${suffix}`;
 }
 

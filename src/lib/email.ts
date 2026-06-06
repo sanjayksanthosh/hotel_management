@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { escapeHtml } from "./utils";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -38,16 +39,16 @@ export async function sendBookingConfirmation({
       <h1 style="color: #1a365d; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
         Booking Confirmation
       </h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${escapeHtml(name)},</p>
       <p>Your booking has been <strong>${paymentStatus === "Paid" ? "confirmed" : "reserved"}</strong>.</p>
       <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p><strong>Booking Reference:</strong> ${reference}</p>
-        <p><strong>Room:</strong> ${roomName}</p>
-        <p><strong>Check-in:</strong> ${checkIn}</p>
-        <p><strong>Check-out:</strong> ${checkOut}</p>
+        <p><strong>Booking Reference:</strong> ${escapeHtml(reference)}</p>
+        <p><strong>Room:</strong> ${escapeHtml(roomName)}</p>
+        <p><strong>Check-in:</strong> ${escapeHtml(checkIn)}</p>
+        <p><strong>Check-out:</strong> ${escapeHtml(checkOut)}</p>
         <p><strong>Total Amount:</strong> $${amount.toFixed(2)}</p>
-        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-        <p><strong>Payment Status:</strong> ${paymentStatus}</p>
+        <p><strong>Payment Method:</strong> ${escapeHtml(paymentMethod)}</p>
+        <p><strong>Payment Status:</strong> ${escapeHtml(paymentStatus)}</p>
       </div>
       <p>Thank you for choosing our hotel!</p>
     </div>
@@ -88,14 +89,14 @@ export async function sendAdminNotification({
         New Booking Notification
       </h1>
       <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p><strong>Booking Reference:</strong> ${reference}</p>
-        <p><strong>Guest Name:</strong> ${guestName}</p>
-        <p><strong>Guest Email:</strong> ${guestEmail}</p>
-        <p><strong>Guest Phone:</strong> ${guestPhone}</p>
-        <p><strong>Room:</strong> ${roomName}</p>
-        <p><strong>Check-in:</strong> ${checkIn}</p>
-        <p><strong>Check-out:</strong> ${checkOut}</p>
-        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        <p><strong>Booking Reference:</strong> ${escapeHtml(reference)}</p>
+        <p><strong>Guest Name:</strong> ${escapeHtml(guestName)}</p>
+        <p><strong>Guest Email:</strong> ${escapeHtml(guestEmail)}</p>
+        <p><strong>Guest Phone:</strong> ${escapeHtml(guestPhone)}</p>
+        <p><strong>Room:</strong> ${escapeHtml(roomName)}</p>
+        <p><strong>Check-in:</strong> ${escapeHtml(checkIn)}</p>
+        <p><strong>Check-out:</strong> ${escapeHtml(checkOut)}</p>
+        <p><strong>Payment Method:</strong> ${escapeHtml(paymentMethod)}</p>
       </div>
     </div>
   `;
